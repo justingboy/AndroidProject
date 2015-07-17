@@ -1,0 +1,240 @@
+Java基础教程视频_传智播客_毕向东_30天版本1223 222  ===
+
+luheng12345
+
+http://download.csdn.net/detail/u014612610/8512621
+
+
+极客学院Android全套教程视频,17G视频+源码
+http://download.csdn.net/detail/u014612610/8512623
+lunheng
+
+千锋Android入门视频教程
+http://download.csdn.net/detail/u014612610/8512625
+
+5000套安卓源码
+http://download.csdn.net/detail/u014612610/8512617
+
+
+总觉得学习一个工具是浪费时间的，所以一直拖到现在，最近看见github上好多项目都是使用了AS创建，逼迫我不得不学习了，下面有一些参考学习连接，都是经过本人鉴定的，你们可以大家可以放心下载。
+1.下载链接：
+   官网：http://developer.android.com/sdk/index.html
+
+   国内：http://www.android-studio.org/
+
+2.学习链接
+  
+  博客篇：http://stormzhang.com/categories.html#devtools-ref
+  视频篇：http://www.imooc.com/video/4242
+
+
+3.世恒易语言百集培训视频教程下载地址：链接: pan.baidu.com/s/1bnpRBgb 密码:7jt6  解压密码：www.lthack.com
+
+
+
+
+
+package com.wl.customview.view;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.Style;
+import android.os.Handler;
+import android.widget.TextView;
+
+import com.wl.customview.utils.ScreenUtils;
+
+public class RollTextView extends TextView {
+
+	private Paint paint = new Paint();
+	// 起始位置
+	int startPos = 0;
+	// 行间距
+	int lineOffset = 52;
+	// 开始画第一个Text距离Y轴的偏移量
+	int startOffset = 0;
+	// 屏幕宽高
+	int screenWidth = 0;
+	int screenHeight = 0;
+	// 滚动速度
+	int scrollSpeend = 1;
+	int count = 0;
+	int switchs = 0;
+	int x = 0;
+	int y = 0;
+	int z = 0;
+	int u = 0;
+	int pos = 0;
+	boolean isPause = false;
+	String[] array = null;
+	String[] temp2 = new String[4];
+	//画text的X坐标，它的位置保持不变
+	private int xCoordinate;
+	//使用Handler停止滚动信息
+	private Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			isPause = false;
+			invalidate();
+			
+		}
+	};
+	
+	public RollTextView(Context context, String[] arrayInfos) {
+		super(context);
+		setBackgroundColor(Color.RED);
+		// 数组信息（）
+		array = arrayInfos;
+		getScreenWidthAndHeight(context);
+		initStrings();
+		initPaint();
+		isPause = false;
+		
+		lineOffset = (int) (screenWidth / 14);
+		startOffset = (int) (screenWidth / 22.5) + 8;
+		startPos = startOffset;
+		x = startPos + lineOffset * 0;
+		y = startPos + lineOffset * 1;
+		z = startPos + lineOffset * 2;
+		u = startPos + lineOffset * 3;
+	
+		xCoordinate = screenWidth / 3 * 2 / 2;
+	}
+
+	/**
+	 * 初始化Paint
+	 */
+	private void initPaint() {
+		int textsize = screenWidth / 25;
+		paint.setTextAlign(Align.CENTER);
+		paint.setTextSize(textsize);
+		paint.setColor(Color.BLACK);
+		paint.setStyle(Style.FILL_AND_STROKE);
+		paint.setAntiAlias(true);
+	}
+
+	private void getScreenWidthAndHeight(Context context) {
+		screenWidth = ScreenUtils.getScreenWidth(context);
+		screenHeight = ScreenUtils.getScreenHeight(context);
+	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		setMeasuredDimension(screenWidth / 3 * 2, (int) (screenWidth / 5) + 5);
+	}
+
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		
+		if (count == lineOffset && !isPause) {
+			isPause = true;
+			count = 0;
+			addNext();
+			switch (switchs) {
+			case 0:
+				x = startPos + lineOffset * 3;
+				switchs = 1;
+				break;
+			case 1:
+				y = startPos + lineOffset * 3;
+				switchs = 2;
+				break;
+			case 2:
+				z = startPos + lineOffset * 3;
+				switchs = 3;
+				break;
+			case 3:
+				u = startPos + lineOffset * 3;
+				switchs = 0;
+				break;
+			}
+		}
+		if (isPause) {
+			handler.sendEmptyMessageDelayed(0, 1000);
+		} else {
+			x -= scrollSpeend;
+			y -= scrollSpeend;
+			z -= scrollSpeend;
+			u -= scrollSpeend;
+		}
+
+		switch (switchs) {
+		case 0:
+			canvas.drawText(temp2[0], xCoordinate, x, paint);
+			canvas.drawText(temp2[1], xCoordinate, y, paint);
+			canvas.drawText(temp2[2], xCoordinate, z, paint);
+			canvas.drawText(temp2[3], xCoordinate, u, paint);
+			break;
+		case 1:
+			canvas.drawText(temp2[3], xCoordinate, x, paint);
+			canvas.drawText(temp2[0], xCoordinate, y, paint);
+			canvas.drawText(temp2[1], xCoordinate, z, paint);
+			canvas.drawText(temp2[2], xCoordinate, u, paint);
+			break;
+		case 2:
+			canvas.drawText(temp2[2], xCoordinate, x, paint);
+			canvas.drawText(temp2[3], xCoordinate, y, paint);
+			canvas.drawText(temp2[0], xCoordinate, z, paint);
+			canvas.drawText(temp2[1], xCoordinate, u, paint);
+			break;
+		case 3:
+			canvas.drawText(temp2[1], xCoordinate, x, paint);
+			canvas.drawText(temp2[2], xCoordinate, y, paint);
+			canvas.drawText(temp2[3], xCoordinate, z, paint);
+			canvas.drawText(temp2[0], xCoordinate, u, paint);
+			break;
+		}
+		//停止的时候不刷新，增加count的值
+		if(!isPause)
+		{
+			count += scrollSpeend;
+			invalidate();
+		}
+	}
+
+	// 一次取4取字符串
+	public void initStrings() {
+		if (null == array)
+			return;
+		// int tempPos = (pos - 1) <= 0 ? 0 : (pos - 1);
+		for (int i = 0; i < 4; i++) {
+			temp2[i] = getStrings(array, pos);
+			// tempPos += 1;
+			pos += 1;
+		}
+
+	}
+
+	// 走到末尾自动归零
+	private String getStrings(String[] array, int pos) {
+		if (pos < array.length)
+			return array[pos];
+		else {
+			this.pos = 0;
+			return array[0];
+		}
+	}
+
+	public void addNext() {
+		temp2[0] = temp2[1];
+		temp2[1] = temp2[2];
+		temp2[2] = temp2[3];
+		temp2[3] = getSingle(array, pos);
+		pos += 1;
+	}
+
+	// 走到末尾自动归零
+	private String getSingle(String[] array, int pos) {
+		if (pos < array.length)
+			return array[pos];
+		else {
+			this.pos = 0;
+			return array[0];
+		}
+	}
+
+}
